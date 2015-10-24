@@ -1,5 +1,3 @@
-
-
 var pObjA = [];
 var pProp = [];
 
@@ -11,15 +9,78 @@ var dTheta = PI/256;
 var theta = 0;
 
 var a = cuboidMaker(50,50,300);
-var b = cuboidMaker(150,50,50)
+var b = cuboidMaker(150,50,50);
 var leg = combiner(a,b);
 var sphere2 = [];
-sphere2 = sphereMaker(50);
-var cuboid69 = cuboidMaker(300,200,100);
+sphere2 = sphereMaker(100);
+var cuboid70 = cuboidMaker(300,200,100);
 
 var canvas = document.getElementById("c");
-	context = canvas.getContext("2d");
+context = canvas.getContext("2d");
+var cubeHeight = $("#button-cube").position().top;
+topDifference = 20;
+var clickState = 0;
+$("#button-cube").click(function(){
+	clickState ++;
+	if (clickState % 2 === 1)
+	{
+		$("#button-cube").text("Tranform!");
+		var cube = cuboidMaker(100,100,100);
+		// transform(100,100,100,cube,0,0,0,0,0,0,0,0,0);
+		if ($(".getTransfromArgs").length === 0)
+		{
+			for(var i = 0; i < 12; i ++)
+			{
+				var text = "<- Enter ";
 
+				if (i % 3 === 0)
+				{
+					text += 'x';
+				}
+				else if (i % 3 === 1)
+				{
+					text += 'y';
+				}
+				else if(i % 3 === 2)
+				{
+					text += 'z';
+				}
+	
+				if (i === 0 || i === 1 || i === 2)
+				{
+					text += " starting position";
+				}
+				else if (i === 3 || i === 4 || i === 5)
+				{
+					text += " rotational velocity";
+				}
+				else if (i === 6 || i === 7 || i === 8)
+				{
+					text += " coordinate to rotate about";
+				}
+				else if (i === 9 || i === 10 || i === 11)
+				{
+					text += " translational velocity";
+				}
+
+				$("#transFromArguments").append("<input class='getTransfromArgs' type='text'>" + text +"</input>");
+			}	
+		}
+	}
+	else if (clickState % 2 === 0)
+	{
+		var argsA = [];
+		for (var i = 0; i < $(".getTransfromArgs").length; i++)
+		{
+			currentValue = $($(".getTransfromArgs")[i]).val();
+			argsA.push(Number(currentValue));
+		}
+		var cuboidd = cuboidMaker(50,50,50);
+		transform(argsA[0],argsA[1],argsA[2],cuboidd,argsA[3],argsA[4],argsA[5],argsA[6],argsA[7],argsA[8],argsA[9],argsA[10],argsA[11]);
+		$(".getTransfromArgs").remove();
+		$("#transFromArguments").text("");
+	}
+});
 function copy(arr)
 {
 	return arr.concat([]);
@@ -43,14 +104,13 @@ function miniRotate(dis1,dis2,dis3,q,xA,yA,zA,XF,YF,ZF,theta)
 function displacer (q,d1,d2,d3)
 {
 	q.forEach(function(qSubA){
-
 		qSubA.forEach(function(qPoint){
 
 			qPoint.x = qPoint.x + d1;
 			qPoint.y = qPoint.y + d2;
 			qPoint.z = qPoint.z + d3;
-		})
-	})
+		});
+	});
 
 	return q;
 }
@@ -156,18 +216,16 @@ function sphereMaker(r)
 	}
 	return sphere;
 }
-
-	function a(num)
-	{
-		return Math.abs(num)
-	}
+function a(num)
+{
+	return Math.abs(num)
+}
 
 function turn (objA,pProp)
 {
 	objA.forEach(function(p,l){
 
 		var pPrime = [];
-
 
 		p.forEach(function(pSubA,m){
 
@@ -177,7 +235,7 @@ function turn (objA,pProp)
 				var prop = pProp[l];
 
 				var xRot = mathTurn(prop.xA,prop.yF,prop.zF,pPoint.y,pPoint.z);
-				//pPoint = mathTurn(prop.xA,prop.yF,prop.zF,pPoint.y,pPoint.z,pPoint.x);
+	
 				 pPoint.y = xRot.a;
 				 pPoint.z = xRot.b;
 
@@ -216,10 +274,10 @@ function move(pA)
 				pPoint.x = pPoint.x + propV.x;
 				pPoint.y = pPoint.y + propV.y;
 				pPoint.z = pPoint.z + propV.z;
-			})
-		})
+			});
+		});
 		l++;
-	})
+	});
 }
 
 function pointConvert(x,w)
@@ -302,14 +360,12 @@ function draw (pA)
 			graph(x,y,z,x,y1,z1);
 		}
 	}
-	graphLine(line69);
-	printPlane(plane69);
-	circle(point70y,point70z,2,1);
+	// graphLine(line70);
+	// printPlane(plane70);
+	// circle(point70y,point70z,2,1);
 
 	pA.forEach(function(pObject,l){                //pA - Array of objects
-
 		pObject.forEach(function(pFace,m){         //pObject Physical object
-
 			//console.log((pFace[0].y < pFace[1].y),m);
 			//if (pFace[0].y <= pFace[1].y)
 			{
@@ -327,14 +383,14 @@ function draw (pA)
 					graph(x1,y1,z1,x2,y2,z2);
 				}
 			}
-		})
-	})
+		});
+	});
 }
 
 function transform(dis1,dis2,dis3,q,xA,yA,zA,XF,YF,ZF,Vx,Vy,Vz)
 {
 	pProp.push({xA:xA,yA:yA,zA:zA,d1:dis1,d2:dis2,d3:dis3,xF:XF,yF:YF,zF:ZF,x:Vx,y:Vy,z:Vz});
-	createP(q,pProp)
+	createP(q,pProp);
 }
 
 function animate()
@@ -364,7 +420,7 @@ function circle (x,y,r,w)
 function createP(q)
 {
 	var p = [];
-	var l = pProp.length-1;
+	var l = pProp.length - 1;
 
 	q.forEach(function(qSubA){
 		var pArray = [];
@@ -372,32 +428,32 @@ function createP(q)
 
 		qSubA.forEach(function(qPoint){
 			var prop = pProp[l];
-
 			pArray.push({x: qPoint.x + prop.d1, y: qPoint.y + prop.d2, z:qPoint.z + prop.d3});
-		})
-	})
+		});
+	});
 
 	pObjA.push(p);
 }
 
 d = displacer(b,0,0,250);
 
-transform(1000,1000,20,cuboid69,0,0,.5,1000,1000,20,0,0,0);
+transform(1000,1000,500	,sphere2,0,0,0,1000,1000,500,0,5,0);
+transform(1000,1000,500	,sphere2,0,0,0,1000,1000,500,10,0,0);
     //displacement,obj,rotXYX ,rotation point, translational velocities
 
 //miniRotate(0,0,0,leg,1,0,0,25,25,0,PI/4)
 
-var point1 = {x:50,y:200,z:100};
-var point2 = {x:100,y:300,z:100};
-var point3 = {x:150,y:100,z:40};
+// var point1 = {x:50,y:200,z:100};
+// var point2 = {x:100,y:300,z:100};
+// var point3 = {x:150,y:100,z:40};
 
-plane69 = planeMaker(point1,point2,point3);
-//plane69 = {A:1,B:1,D:-1};
-var line69 = {m:3,P:3,n:1.5,Q:0};
+// plane70 = planeMaker(point1,point2,point3);
+// //plane70 = {A:1,B:1,D:-1};
+// var line70 = {m:3,P:3,n:1.5,Q:0};
 
-point69 = planeLineIntersect(line69,plane69);
-point70y = pointConvert(point69.x, point69.y);
-point70z = pointConvert(point69.x, point69.z);
+// point70 = planeLineIntersect(line70,plane70);
+// point70y = pointConvert(point70.x, point70.y);
+// point70z = pointConvert(point70.x, point70.z);
 
 
 //transform(200,500,600,planeo,0,0,0,300,0,300,-0,-0,0);
