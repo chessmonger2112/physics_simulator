@@ -3,30 +3,28 @@ var pProp = [];
 
 var D = 500;
 var t = 0;
-
+var counter = 0;
 var PI = Math.PI;
 var dTheta = PI/256;
 var theta = 0;
-
 var a = cuboidMaker(50,50,300);
 var b = cuboidMaker(150,50,50);
 var leg = combiner(a,b);
 var sphere2 = [];
 sphere2 = sphereMaker(100);
 var cuboid70 = cuboidMaker(300,200,100);
-
 var canvas = document.getElementById("c");
 context = canvas.getContext("2d");
 var cubeHeight = $("#button-cube").position().top;
 topDifference = 20;
 var clickState = 0;
+
 $("#button-cube").click(function(){
 	clickState ++;
 	if (clickState % 2 === 1)
 	{
 		$("#button-cube").text("Tranform!");
 		var cube = cuboidMaker(100,100,100);
-		// transform(100,100,100,cube,0,0,0,0,0,0,0,0,0);
 		if ($(".getTransfromArgs").length === 0)
 		{
 			for(var i = 0; i < 12; i ++)
@@ -46,19 +44,19 @@ $("#button-cube").click(function(){
 					text += 'z';
 				}
 	
-				if (i === 0 || i === 1 || i === 2)
+				if (i >=0 && i <= 2)
 				{
 					text += " starting position";
 				}
-				else if (i === 3 || i === 4 || i === 5)
+				else if (i >= 3 && i <= 5)
 				{
 					text += " rotational velocity";
 				}
-				else if (i === 6 || i === 7 || i === 8)
+				else if (i >= 6 && i <= 8)
 				{
 					text += " coordinate to rotate about";
 				}
-				else if (i === 9 || i === 10 || i === 11)
+				else if (i >= 9 && i <=11)
 				{
 					text += " translational velocity";
 				}
@@ -322,6 +320,8 @@ function draw (pA)
 		var gy2 = pointConvert(x2,y2);
 		var gz2 = pointConvert(x2,z2);
 
+		//call a function that checks if it is an area that should be seen, or is obscured but the object or another object
+
 		if (x1 > - D)
 		{
             context.beginPath();
@@ -364,29 +364,95 @@ function draw (pA)
 	// printPlane(plane70);
 	// circle(point70y,point70z,2,1);
 
-	pA.forEach(function(pObject,l){                //pA - Array of objects
+	pA.forEach(function(pObject,l){              //pA - Array of objects
 		pObject.forEach(function(pFace,m){         //pObject Physical object
 			//console.log((pFace[0].y < pFace[1].y),m);
 			//if (pFace[0].y <= pFace[1].y)
 			{
-				for(var n = 0;n < pFace.length-1;n++)
+				work = 0;
+				if (counter < 100)
+				{
+					console.log("face length is ",pFace.length);
+					counter ++;
+					var pointInQ = {x:null,y:null};
+					pointInQ.x = pFace[0].x + pFace[2].x;
+					pointInQ.y = pFace[0].y + pFace[2].y;
+					checksIfBehind(pFace,pointInQ);
+				}
+				for(var n = 0; n < pFace.length - 1; n ++)
 				{
 					var pPoint = pFace[n];
-					var pPoint1 =  pFace[n+1];
+					var pPoint1 =  pFace[n + 1];
 					var x1 = pPoint.x;
 					var x2 = pPoint1.x;
 					var y1 = pPoint.y;
 					var y2 = pPoint1.y
 					var z1 = pPoint.z;
 					var z2 = pPoint1.z;
-
+					
 					graph(x1,y1,z1,x2,y2,z2);
 				}
 			}
 		});
 	});
 }
+function checksIfBehind(face,piq)
+{
+	console.log("point in question is ",piq);
+	var dw = 0;
+	var work = 0;
 
+	face.forEach(function(point,index){
+		var lastPoint = face.length -1;
+		if (index === lastPoint)
+		{
+			//use the first point
+			// doWork(point,face[0]);
+		}
+		else
+		{
+			doWork(point,face[index + 1])
+		}
+	});
+	function doWork(point1,point2)
+    {
+    	var x3 = point1.x;
+		var y3 = point1.y;
+		var x4 = point2.x;
+		var y4 = point2.y;
+    	point = {x:1,y:-10};
+    	// var path = [{x:0,y:0},{x:6,y:3},{x:0,y:7}];
+        var x1 = x3 - piq.x;
+        var x2 = x4 - piq.x;
+        var y2 = y4 - piq.y;
+        var y1 = y3 - piq.y;
+
+        if (x2 - x1 === 0)
+        {
+           x2 += .000000000001
+        }
+        console.log("y2 and y1 is ",y2,y1);
+        var m = (y2 - y1) / (x2 - x1);
+        var m2 = m * m;
+        var b = y2 - (m * x2);
+        if (b !== 0)
+        {
+            var A = b / (m2 + 1);
+            var arg1 = (x1 + m * b / (m2 + 1)) / A;
+            var arg2 = (x2 + m * b / (m2 + 1)) / A;
+            var dW = -(Math.atan(arg2) - Math.atan(arg1));
+        }
+        else if (b === 0)
+        {
+            dW = 0;
+        }
+
+        work += dW;
+        console.log("Delta work is ",dW);
+        console.log("m :",m);
+    }
+    console.log("Work in the actual function is ",work);
+}
 function transform(dis1,dis2,dis3,q,xA,yA,zA,XF,YF,ZF,Vx,Vy,Vz)
 {
 	pProp.push({xA:xA,yA:yA,zA:zA,d1:dis1,d2:dis2,d3:dis3,xF:XF,yF:YF,zF:ZF,x:Vx,y:Vy,z:Vz});
@@ -437,8 +503,8 @@ function createP(q)
 
 d = displacer(b,0,0,250);
 
-transform(1000,1000,500	,sphere2,0,0,0,1000,1000,500,0,5,0);
-transform(1000,1000,500	,sphere2,0,0,0,1000,1000,500,10,0,0);
+transform(1000,1000,500	,cuboid70,0,0,0,1000,1000,500,0,5,0);
+transform(1000,1000,500	,cuboid70,0,0,0,1000,1000,500,10,0,0);
     //displacement,obj,rotXYX ,rotation point, translational velocities
 
 //miniRotate(0,0,0,leg,1,0,0,25,25,0,PI/4)
