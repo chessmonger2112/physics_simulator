@@ -370,15 +370,7 @@ function draw (pA)
 			//if (pFace[0].y <= pFace[1].y)
 			{
 				work = 0;
-				if (counter < 100)
-				{
-					console.log("face length is ",pFace.length);
-					counter ++;
-					var pointInQ = {x:null,y:null};
-					pointInQ.x = pFace[0].x + pFace[2].x;
-					pointInQ.y = pFace[0].y + pFace[2].y;
-					checksIfBehind(pFace,pointInQ);
-				}
+				var face2d = [];
 				for(var n = 0; n < pFace.length - 1; n ++)
 				{
 					var pPoint = pFace[n];
@@ -389,8 +381,34 @@ function draw (pA)
 					var y2 = pPoint1.y
 					var z1 = pPoint.z;
 					var z2 = pPoint1.z;
+
+
+					var gy1 = pointConvert(pFace[n].x,pFace[n].y);
+					var gz1 = pointConvert(pFace[n].x,pFace[n].z);
+					face2d.push({x : gy1, y : gz1});
 					
 					graph(x1,y1,z1,x2,y2,z2);
+				}
+				if (counter < 100)
+				{
+					counter ++;
+
+					var point2D1x = pointConvert(pFace[0].x,pFace[0].y);
+					var point2D1y = pointConvert(pFace[0].x,pFace[0].z);
+					var point2D2x = pointConvert(pFace[2].x,pFace[2].y);
+					var point2D2y = pointConvert(pFace[2].x,pFace[2].z);
+
+					var piqx = (point2D1x + point2D2x) / 2;
+					var piqy = (point2D1y + point2D2y) / 2;
+
+					// console.log("Do they equal each other? ", Math.round(point2D1x * 100) / 100  === Math.round(face2d[0].x * 100) / 100,Math.round(point2D1x * 100) / 100 ,face2d[0].x);
+
+					face2d.forEach(function(point2d,index){
+						// console.log("point is ",point2d)
+					});
+					// console.log("piq is ", piqx, piqy);
+
+					checksIfBehind(face2d,{x : piqx, y: piqy});
 				}
 			}
 		});
@@ -398,7 +416,8 @@ function draw (pA)
 }
 function checksIfBehind(face,piq)
 {
-	console.log("point in question is ",piq);
+	// console.log("point in question is ",piq);
+	// console.log("the 2d face length is ",face.length);
 	var dw = 0;
 	var work = 0;
 
@@ -407,7 +426,7 @@ function checksIfBehind(face,piq)
 		if (index === lastPoint)
 		{
 			//use the first point
-			// doWork(point,face[0]);
+			doWork(point,face[0]);
 		}
 		else
 		{
@@ -431,7 +450,7 @@ function checksIfBehind(face,piq)
         {
            x2 += .000000000001
         }
-        console.log("y2 and y1 is ",y2,y1);
+        // console.log("Del y ",y2 - y1, "Del x ", x2 - x1);
         var m = (y2 - y1) / (x2 - x1);
         var m2 = m * m;
         var b = y2 - (m * x2);
@@ -448,8 +467,8 @@ function checksIfBehind(face,piq)
         }
 
         work += dW;
-        console.log("Delta work is ",dW);
-        console.log("m :",m);
+        // console.log("Delta work is ",dW);
+        // console.log("m :",m);
     }
     console.log("Work in the actual function is ",work);
 }
