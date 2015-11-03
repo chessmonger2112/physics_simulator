@@ -119,11 +119,10 @@ function cuboidMaker(width,length,height)
 	var face2 = [{x:0,y:width,z:0}, {x:length,y:width,z:0},{x:length,y:width,z:height},{x:0,y:width,z:height},{x:0,y:width,z:0}];
 	var face3 = [{x:length,y:width,z:0},{x:length,y:0,z:0},{x:length,y:0,z:height},{x:length,y:width,z:height},{x:length,y:width,z:0}];
 	var face4 = [{x:length,y:0,z:0},{x:0,y:0,z:0},{x:0,y:0,z:height},{x:length,y:0,z:height},{x:length,y:0,z:0}];
-	var face5 = [{x:0,y:width,z:height},{x:0,y:0,z:height},{x:length,y:0,z:height},{x:length,y:width,z:height},{x:0,y:width,z:height}];
-	var face6 = [{x:length,y:width,z:0},{x:length,y:0,z:0},{x:0,y:0,z:0},{x:0,y:width,z:0},{x:length,y:width,z:0}];
+	var face5 = [{x:0,y:width,z:height},{x:length,y:width,z:height},{x:length,y:0,z:height},{x:0,y:0,z:height},{x:0,y:width,z:height}];
+	var face6 = [{x:length,y:width,z:0},{x:0,y:width,z:0},{x:0,y:0,z:0},{x:length,y:0,z:0},{x:length,y:width,z:0}];
 
-	return [face1,face2,face3,face4]//,face5,face6];
-	//return[face2]
+	return [face1,face2,face3,face4,face5,face6];
 }
 
 /*{
@@ -333,6 +332,40 @@ function draw (pA)
         }
 	}
 
+	function graphPart2(faceArray2d,piq)
+	{
+		if (checksIfBehind(faceArray2d,piq))
+		{
+			faceArray2d.forEach(function(point2d,index){
+				if(index === faceArray2d.length -1)
+				{
+					var gy1 = point2d.x;
+					var gz1 = point2d.y;
+					var gy2 = faceArray2d[0].x;
+					var gz2 = faceArray2d[0].y;
+				}
+				else 
+				{
+					var gy1 = point2d.x;
+					var gz1 = point2d.y;
+					var gy2 = faceArray2d[index + 1].x;
+					var gz2 = faceArray2d[index + 1].y;
+				}
+				// if (x1 > - D)
+				// {
+					context.beginPath();
+		            context.moveTo(gy1 + 00, gz1);
+		            context.lineTo(gy2 + 00, gz2);
+		            console.log("old z is ",gz1);
+
+		            context.lineWidth = .3;
+		            context.closePath();
+		            context.stroke();
+		        // }
+			});
+		}
+	}
+
 	function graphLine(line)
 	{
 		var xLim = 500;
@@ -382,14 +415,14 @@ function draw (pA)
 					var z1 = pPoint.z;
 					var z2 = pPoint1.z;
 
-
 					var gy1 = pointConvert(pFace[n].x,pFace[n].y);
 					var gz1 = pointConvert(pFace[n].x,pFace[n].z);
 					face2d.push({x : gy1, y : gz1});
 					
-					graph(x1,y1,z1,x2,y2,z2);
+					// graph(x1,y1,z1,x2,y2,z2);
 				}
-				if (counter < 100)
+
+				// if (counter < 100)
 				{
 					counter ++;
 
@@ -401,14 +434,8 @@ function draw (pA)
 					var piqx = (point2D1x + point2D2x) / 2;
 					var piqy = (point2D1y + point2D2y) / 2;
 
-					// console.log("Do they equal each other? ", Math.round(point2D1x * 100) / 100  === Math.round(face2d[0].x * 100) / 100,Math.round(point2D1x * 100) / 100 ,face2d[0].x);
-
-					face2d.forEach(function(point2d,index){
-						// console.log("point is ",point2d)
-					});
-					// console.log("piq is ", piqx, piqy);
-
 					checksIfBehind(face2d,{x : piqx, y: piqy});
+					graphPart2(face2d,{x:piqx,y:piqy});
 				}
 			}
 		});
@@ -439,8 +466,7 @@ function checksIfBehind(face,piq)
 		var y3 = point1.y;
 		var x4 = point2.x;
 		var y4 = point2.y;
-    	point = {x:1,y:-10};
-    	// var path = [{x:0,y:0},{x:6,y:3},{x:0,y:7}];
+
         var x1 = x3 - piq.x;
         var x2 = x4 - piq.x;
         var y2 = y4 - piq.y;
@@ -470,7 +496,12 @@ function checksIfBehind(face,piq)
         // console.log("Delta work is ",dW);
         // console.log("m :",m);
     }
-    console.log("Work in the actual function is ",work);
+    // console.log("Work in the actual function is ",work);
+
+    if(Math.round(work) === 6)
+    {
+    	return true;
+    }
 }
 function transform(dis1,dis2,dis3,q,xA,yA,zA,XF,YF,ZF,Vx,Vy,Vz)
 {
@@ -483,13 +514,12 @@ function animate()
 	theta += dTheta;
 	//if (theta<1*PI)
 	{
-		t += .01;
+	t += .01;
 	context.clearRect(0, 0, canvas.width, canvas.height);
 
 	move(pObjA);
 	turn(pObjA,pProp);
 	draw(pObjA);
-
 	}
 //	dTheta = .05*Math.cos(t);
 }
@@ -522,8 +552,9 @@ function createP(q)
 
 d = displacer(b,0,0,250);
 
-transform(1000,1000,500	,cuboid70,0,0,0,1000,1000,500,0,5,0);
-transform(1000,1000,500	,cuboid70,0,0,0,1000,1000,500,10,0,0);
+// transform(1000,1000,500	,cuboid70,0,0,0,1000,1000,500,0,5,0);
+// transform(1000,1000,500	,cuboid70,0,0,0,1000,1000,500,10,0,0);
+transform(1000,1000,500	,cuboid70,0,10,0,1000,1000,500,0,0,0);
     //displacement,obj,rotXYX ,rotation point, translational velocities
 
 //miniRotate(0,0,0,leg,1,0,0,25,25,0,PI/4)
