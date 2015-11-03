@@ -140,55 +140,6 @@ function combiner (object1,object2)
 	return object1.concat(object2);
 }
 
-function planeLineIntersect (line,plane)
-{
-	var A = plane.A;
-	var B = plane.B;
-	var E = plane.D;
-	var m = line.m;
-	var n = line.n;
-	var P = line.P;
-	var Q = line.Q;
-
-	var Bdn = B / n;
-	var xNum = Bdn * (Q - P) - P - E;
-	var xDen = A + m * (Bdn + 1);
-	var x = xNum / xDen;
-	var mx = m * x;
-	var y = (mx + P - Q) / n;
-	var z = mx + P;
-	return {x:x,y:y,z:z};
-}
-
-function planeMaker (p1,p2,p3)  //takes in three points and creates plane
-{
-	var x1 = p1.x;
-	var x2 = p2.x;
-	var x3 = p3.x;
-	var y1 = p1.y;
-	var y2 = p2.y;
-	var y3 = p3.y;
-	var z1 = p1.z;
-	var z2 = p2.z;
-	var z3 = p3.z;
-
-	var zDelt2 = z2 - z1
-	var yDelt1 = y3 - y1;
-	var yDelt2 = y1 - y2;
-	var zDelt1 = z3 - z1;
-	var xDelt1 = x1 - x3;
-	var xDelt2 = x2 - x1;
-
-	var ANum = (zDelt2 * yDelt1 / yDelt2) + zDelt1;
-	var ADen = xDelt1 - xDelt2 * yDelt1 / yDelt2;
-
-	var A = ANum / ADen;
-	var B = (A * xDelt2 + zDelt2) / yDelt2;
-	var D = (-1 * A * x3) - (B * y3) - z3;
-
-	return {A:A,B:B,D:D};
-}
-
 function sphereMaker(r)
 {
 	var j = 0;
@@ -281,57 +232,28 @@ function pointConvert(x,w)
 {
 	return  w * D / (x + D);
 }
-
-function draw (pA)
+function graph(x1,y1,z1,x2,y2,z2)
 {
-	function printPlane(plane)
+	var gy1 = pointConvert(x1,y1);
+	var gz1 = pointConvert(x1,z1);
+	var gy2 = pointConvert(x2,y2);
+	var gz2 = pointConvert(x2,z2);
+
+	//call a function that checks if it is an area that should be seen, or is obscured but the object or another object
+
+	if (x1 > - D)
 	{
-		var xLim = 100;
-		var yLim = 100;
+        context.beginPath();
+        context.moveTo(gy1 + 00, gz1);
+        context.lineTo(gy2 + 00, gz2);
+        context.lineWidth = .3;
+        context.closePath();
+        context.stroke();
+    }
+}
 
-		var A = plane.A;
-		var B = plane.B;
-		var E = plane.D;
-
-		for(var x = 0;x < xLim;x += 2)
-		{
-			for(var y = 0;y < yLim;y += 2)
-			{
-				var y1 = y + 1;
-				var x1 = x + 1;
-				var z = makeZ(x,y);
-				var z1 = makeZ(x,y1);
-
-				function makeZ(x,y)
-				{
-					return (-1 * A * x) - (B * y) - E;
-				}
-
-				graph(x,y,z,x1,y1,z1);
-			}
-		}
-	}
-
-	function graph(x1,y1,z1,x2,y2,z2)
-	{
-		var gy1 = pointConvert(x1,y1);
-		var gz1 = pointConvert(x1,z1);
-		var gy2 = pointConvert(x2,y2);
-		var gz2 = pointConvert(x2,z2);
-
-		//call a function that checks if it is an area that should be seen, or is obscured but the object or another object
-
-		if (x1 > - D)
-		{
-            context.beginPath();
-            context.moveTo(gy1 + 00, gz1);
-            context.lineTo(gy2 + 00, gz2);
-            context.lineWidth = .3;
-            context.closePath();
-            context.stroke();
-        }
-	}
-
+function draw(pA)
+{
 	function graphPart2(faceArray2d,piq)
 	{
 		if (checksIfBehind(faceArray2d,piq))
@@ -356,7 +278,6 @@ function draw (pA)
 					context.beginPath();
 		            context.moveTo(gy1 + 00, gz1);
 		            context.lineTo(gy2 + 00, gz2);
-		            console.log("old z is ",gz1);
 
 		            context.lineWidth = .3;
 		            context.closePath();
@@ -365,37 +286,6 @@ function draw (pA)
 			});
 		}
 	}
-
-	function graphLine(line)
-	{
-		var xLim = 500;
-		var m = line.m;
-		var n = line.n;
-		var P = line.P;
-		var Q = line.Q;
-
-		for(var x = 0;x < xLim; x++)
-		{
-			function makeZ(x)
-			{
-				return  m * x + P;
-			}
-			function makeY(z)
-			{
-				return  (z - Q) / n;
-			}
-
-			var z = makeZ(x);
-			var z1 = makeZ(x + 1);
-			var y = makeY(z);
-			var y1 = makeY(z1);
-
-			graph(x,y,z,x,y1,z1);
-		}
-	}
-	// graphLine(line70);
-	// printPlane(plane70);
-	// circle(point70y,point70z,2,1);
 
 	pA.forEach(function(pObject,l){              //pA - Array of objects
 		pObject.forEach(function(pFace,m){         //pObject Physical object
@@ -422,29 +312,22 @@ function draw (pA)
 					// graph(x1,y1,z1,x2,y2,z2);
 				}
 
-				// if (counter < 100)
-				{
-					counter ++;
+				var point2D1x = pointConvert(pFace[0].x,pFace[0].y);
+				var point2D1y = pointConvert(pFace[0].x,pFace[0].z);
+				var point2D2x = pointConvert(pFace[2].x,pFace[2].y);
+				var point2D2y = pointConvert(pFace[2].x,pFace[2].z);
 
-					var point2D1x = pointConvert(pFace[0].x,pFace[0].y);
-					var point2D1y = pointConvert(pFace[0].x,pFace[0].z);
-					var point2D2x = pointConvert(pFace[2].x,pFace[2].y);
-					var point2D2y = pointConvert(pFace[2].x,pFace[2].z);
+				var piqx = (point2D1x + point2D2x) / 2;
+				var piqy = (point2D1y + point2D2y) / 2;
 
-					var piqx = (point2D1x + point2D2x) / 2;
-					var piqy = (point2D1y + point2D2y) / 2;
-
-					checksIfBehind(face2d,{x : piqx, y: piqy});
-					graphPart2(face2d,{x:piqx,y:piqy});
-				}
+				checksIfBehind(face2d,{x : piqx, y: piqy});
+				graphPart2(face2d,{x:piqx,y:piqy});
 			}
 		});
 	});
 }
 function checksIfBehind(face,piq)
 {
-	// console.log("point in question is ",piq);
-	// console.log("the 2d face length is ",face.length);
 	var dw = 0;
 	var work = 0;
 
@@ -476,7 +359,6 @@ function checksIfBehind(face,piq)
         {
            x2 += .000000000001
         }
-        // console.log("Del y ",y2 - y1, "Del x ", x2 - x1);
         var m = (y2 - y1) / (x2 - x1);
         var m2 = m * m;
         var b = y2 - (m * x2);
@@ -493,10 +375,7 @@ function checksIfBehind(face,piq)
         }
 
         work += dW;
-        // console.log("Delta work is ",dW);
-        // console.log("m :",m);
     }
-    // console.log("Work in the actual function is ",work);
 
     if(Math.round(work) === 6)
     {
@@ -512,24 +391,12 @@ function transform(dis1,dis2,dis3,q,xA,yA,zA,XF,YF,ZF,Vx,Vy,Vz)
 function animate()
 {
 	theta += dTheta;
-	//if (theta<1*PI)
-	{
 	t += .01;
 	context.clearRect(0, 0, canvas.width, canvas.height);
 
 	move(pObjA);
 	turn(pObjA,pProp);
 	draw(pObjA);
-	}
-//	dTheta = .05*Math.cos(t);
-}
-function circle (x,y,r,w)
-{
-    context.lineWidth = w;
-    context.beginPath();
-    context.arc(x,y,r,0,2 * PI);
-    context.closePath();
-    context.stroke();
 }
 
 function createP(q)
@@ -554,24 +421,10 @@ d = displacer(b,0,0,250);
 
 // transform(1000,1000,500	,cuboid70,0,0,0,1000,1000,500,0,5,0);
 // transform(1000,1000,500	,cuboid70,0,0,0,1000,1000,500,10,0,0);
-transform(1000,1000,500	,cuboid70,0,10,0,1000,1000,500,0,0,0);
+transform(1000,500,500,leg,0,0,5,1000,500,500,0,0,0);
     //displacement,obj,rotXYX ,rotation point, translational velocities
 
 //miniRotate(0,0,0,leg,1,0,0,25,25,0,PI/4)
-
-// var point1 = {x:50,y:200,z:100};
-// var point2 = {x:100,y:300,z:100};
-// var point3 = {x:150,y:100,z:40};
-
-// plane70 = planeMaker(point1,point2,point3);
-// //plane70 = {A:1,B:1,D:-1};
-// var line70 = {m:3,P:3,n:1.5,Q:0};
-
-// point70 = planeLineIntersect(line70,plane70);
-// point70y = pointConvert(point70.x, point70.y);
-// point70z = pointConvert(point70.x, point70.z);
-
-
 //transform(200,500,600,planeo,0,0,0,300,0,300,-0,-0,0);
 var interval = setInterval(animate, 1000 / 20)
 
