@@ -204,9 +204,9 @@ function turn (objA,pProp)
 
 					return {a:prime1,b:prime2,z: v3};
 				}
-			})
-		})
-	})
+			});
+		});
+	});
 }
 
 function move(pA)
@@ -421,10 +421,12 @@ d = displacer(b,0,0,250);
 
 // transform(1000,1000,500	,cuboid70,0,0,0,1000,1000,500,0,5,0);
 // transform(1000,1000,500	,cuboid70,0,0,0,1000,1000,500,10,0,0);
-transform(1000,500,500,leg,0,0,5,1000,500,500,0,0,0);
+
+transform(1000,500,500,leg,0,0,0,1000,500,500,0,0,0);
+miniRotate(0,0,0,leg,0,0,1,25,25,0,PI/4);
     //displacement,obj,rotXYX ,rotation point, translational velocities
 
-//miniRotate(0,0,0,leg,1,0,0,25,25,0,PI/4)
+
 //transform(200,500,600,planeo,0,0,0,300,0,300,-0,-0,0);
 var interval = setInterval(animate, 1000 / 20)
 
