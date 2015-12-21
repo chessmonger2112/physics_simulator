@@ -43,7 +43,7 @@ $("#button-cube").click(function(){
 				{
 					text += 'z';
 				}
-	
+
 				if (i >=0 && i <= 2)
 				{
 					text += " starting position";
@@ -61,8 +61,13 @@ $("#button-cube").click(function(){
 					text += " translational velocity";
 				}
 
-				$("#transFromArguments").append("<input class='getTransfromArgs' type='text'>" + text +"</input>");
-			}	
+        if (i % 3 === 0)
+        {
+          var classNum = i / 3;
+          $("#transFromArguments").append("<div class=" + "'div" + classNum + "'></div>");
+        }
+        $(".div"+ classNum).append("<input class='getTransfromArgs' type='text'>" + text);
+			}
 		}
 	}
 	else if (clickState % 2 === 0)
@@ -183,7 +188,7 @@ function turn (objA,pProp)
 				var prop = pProp[l];
 
 				var xRot = mathTurn(prop.xA,prop.yF,prop.zF,pPoint.y,pPoint.z);
-	
+
 				 pPoint.y = xRot.a;
 				 pPoint.z = xRot.b;
 
@@ -266,7 +271,7 @@ function draw(pA)
 					var gy2 = faceArray2d[0].x;
 					var gz2 = faceArray2d[0].y;
 				}
-				else 
+				else
 				{
 					var gy1 = point2d.x;
 					var gz1 = point2d.y;
@@ -308,7 +313,7 @@ function draw(pA)
 					var gy1 = pointConvert(pFace[n].x,pFace[n].y);
 					var gz1 = pointConvert(pFace[n].x,pFace[n].z);
 					face2d.push({x : gy1, y : gz1});
-					
+
 					// graph(x1,y1,z1,x2,y2,z2);
 				}
 
@@ -357,7 +362,7 @@ function checksIfBehind(face,piq)
 
         if (x2 - x1 === 0)
         {
-           x2 += .000000000001
+           x2 += .000000000001   // this number will be used as denominator later, and therefore cannot be zero.
         }
         var m = (y2 - y1) / (x2 - x1);
         var m2 = m * m;
