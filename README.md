@@ -4,7 +4,7 @@ DOCUMENTATION:
 
 The heart of the application is the transform function. 
 
-The transform function takes in 13 arguements.
+The transform function takes in 13 arguments.
 
 The first three arguments are the initial position of the physical object (object here is not reffering to the datatype. Think of a physical object like a cube or chair) as x,y,z coordinates in three dimensional space. They're role is more important than that though as they will affect the length of the oribit if a rotational velocity is present.
 
